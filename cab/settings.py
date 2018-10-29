@@ -124,5 +124,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-GOOGLE_MAPS_API_KEY = 'AIzaSyCbUAATAabtDToQSbolZ2igFM6YgbL2HC0'
+GOOGLE_MAPS_API_KEY = 'AIzaSyDHBozDzZZFB1eDG8kjSiMHwDrwHDiuEx8'
+CORS_ORIGIN_ALLOW_ALL = True

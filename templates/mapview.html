@@ -1,19 +1,211 @@
 <html>
     <head>
         MAPVIEW
+
+        <style>
+            #input-origin,
+            #input-destination {
+                background-color: #fff   ;
+                font-family: Roboto;
+                font-size: 15px;
+                font-weight: 300;
+                margin-left: 12px;
+                padding: 0 11px 0 13px;
+                text-overflow: ellipsis;
+                width: 200px;
+            }
+        
+            #input-origin:focus,
+            #input-destination:focus {
+                border-color: #4d90fe;
+            }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     </head>
     <body>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
         <div>
-            <input type="text" name="origin" id="org">
-            <input type="text" name="destination" id="dest">
+            <div id="pac-container">
+            <form method="post">{% csrf_token %}
+                <input id="input-origin" type="text" name="mapInfo"
+                    placeholder="Enter the sorce">
+                <input id="input-destination" type="text"
+                    placeholder="Enter the destination">
+                <button id="map-visble" type="submit" formmethod="POST"></button>
+            </form>
+            </div>
         </div>
+        <div id="iframeHolder"></div>
+        <div id="map"></div>
+            <div id="infowindow-content">
+            <img src="" width="16" height="16" id="place-icon">
+            <span id="place-name"  class="title"></span><br>
+            <span id="place-address"></span>
+        </div>
+
         <div>
+
+            <script>
+
+                var origin_placeId = "ChIJAXf-lZdbUjoRd5vdu7GtvXA";
+                var destination_placeId = "ChIJLbsbq5ZbUjoRgpHpUsnTaaw";
+                    function initMap() {
+                        var map = new google.maps.Map(document.getElementById('map'), {
+                          center: {lat: -33.8688, lng: 151.2195},
+                          zoom: 13
+                        });
+                        var input_origin = document.getElementById('input-origin');
+                        var input_destination = document.getElementById('input-destination');
+
+                        map.controls[google.maps.ControlPosition.TOP_RIGHT]
+
+                        var autocomplete = new google.maps.places.Autocomplete(input_origin);
+                        var autocomplete_destination = new google.maps.places.Autocomplete(input_destination);
+                        autocomplete.bindTo('bounds', map);
+                        autocomplete_destination.bindTo('bounds', map);
+
+                        // Set the data fields to return when the user selects a place.
+                        autocomplete.setFields(['address_components', 'geometry', 'icon', 'name', 'place_id']);
+                        autocomplete_destination.setFields(['address_components', 'geometry', 'icon', 'name','place_id']);
+                        var infowindow = new google.maps.InfoWindow();
+                        var infowindowContent = document.getElementById('infowindow-content');
+                        infowindow.setContent(infowindowContent);
+
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            anchorPoint: new google.maps.Point(0, -29)
+                        });
+                        autocomplete.addListener('place_changed', function() {
+                            infowindow.close();
+                            marker.setVisible(false);
+                            var place = autocomplete.getPlace();
+                            if (!place.geometry) {
+                                // User entered the name of a Place that was not suggested and
+                                // pressed the Enter key, or the Place Details request failed.
+                                window.alert("No details available for input: '" + place.name + "'");
+                                return;
+                            }
+                            // If the place has a geometry, then present it on a map.
+                            if (place.geometry.viewport) {
+                                map.fitBounds(place.geometry.viewport);
+                            } else {
+                                map.setCenter(place.geometry.location);
+                                map.setZoom(17);  // Why 17? Because it looks good.
+                            }
+                            
+                            marker.setPosition(place.geometry.location);
+                            marker.setVisible(true);
+
+                            var address = '';
+                            if (place.address_components) {
+                                address = [
+                                (place.address_components[0] && place.address_components[0].short_name || ''),
+                                (place.address_components[1] && place.address_components[1].short_name || ''),
+                                (place.address_components[2] && place.address_components[2].short_name || '')
+                                ].join(' ');
+                            }
+                            infowindowContent.children['place-icon'].src = place.icon;
+                            infowindowContent.children['place-name'].textContent = place.name;
+                            //infowindowContent.children['place-id'].textContent = place.place_id;
+                            origin_placeId = place.place_id;
+                            console.log(origin_placeId);
+                            infowindowContent.children['place-address'].textContent = address;
+                            infowindow.open(map, marker);
+                        });
+                        autocomplete_destination.addListener('place_changed', function() {
+                            infowindow.close();
+                            marker.setVisible(false);
+                            var place = autocomplete_destination.getPlace();
+                            if (!place.geometry) {
+                                // User entered the name of a Place that was not suggested and
+                                // pressed the Enter key, or the Place Details request failed.
+                                window.alert("No details available for input: '" + place.name + "'");
+                                return;
+                            }
+                            // If the place has a geometry, then present it on a map.
+                            if (place.geometry.viewport) {
+                                map.fitBounds(place.geometry.viewport);
+                            } else {
+                                map.setCenter(place.geometry.location);
+                                map.setZoom(17);  // Why 17? Because it looks good.
+                            }
+                            marker.setPosition(place.geometry.location);
+                            marker.setVisible(true);
+                            var address = '';
+                            if (place.address_components) {
+                                address = [
+                                (place.address_components[0] && place.address_components[0].short_name || ''),
+                                (place.address_components[1] && place.address_components[1].short_name || ''),
+                                (place.address_components[2] && place.address_components[2].short_name || '')
+                                ].join(' ');
+                            }
+                            infowindowContent.children['place-icon'].src = place.icon;
+                            infowindowContent.children['place-name'].textContent = place.name;
+                            infowindowContent.children['place-address'].textContent = address;
+                            infowindow.open(map, marker);
+                            destination_placeId = place.place_id;
+
+                            console.log(destination_placeId);
+                        });
+
+
+
+                    }
+
+
+            </script>
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbUAATAabtDToQSbolZ2igFM6YgbL2HC0&libraries=places&callback=initMap"
+            async defer>
+            </script>
+            {% comment %} <script>
+                    document.getElementById("mapview").src = "https://www.google.com/maps/embed/v1/directions?origin=place_id:"+origin_placeId+"&destination=place_id:"+destination_placeId+"&key=AIzaSyCbUAATAabtDToQSbolZ2igFM6YgbL2HC0"
+            </script>  {% endcomment %}
+            {% comment %} <script type="text/javascript">
+                $(function(){
+                    $('#map-visble').click(function(){ 
+                        if(!$('#iframe').length) {
+                                $('#iframeHolder').html('<iframe id="mapview" width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/directions?origin=place_id:"+origin_placeId+"&destination=place_id:"+destination_placeId+"&key=AIzaSyCbUAATAabtDToQSbolZ2igFM6YgbL2HC0" allowfullscreen></iframe> ');
+                        }
+                    });   
+                });
+            </script> {% endcomment %}
             <iframe
+                id="mapview"
                 width="600"
                 height="450"
                 frameborder="0" style="border:0"
-                src="https://www.google.com/maps/embed/v1/directions?origin=place_id:ChIJAXf-lZdbUjoRd5vdu7GtvXA&destination=place_id:ChIJLbsbq5ZbUjoRgpHpUsnTaaw&key=AIzaSyCbUAATAabtDToQSbolZ2igFM6YgbL2HC0" allowfullscreen>
-            </iframe>
+                src="" allowfullscreen>
+            </iframe> 
+            <!--<script>
+                document.getElementById("mapview").src = "https://www.google.com/maps/embed/v1/directions?origin=place_id:"+origin_placeId+"&destination=place_id:"+destination_placeId+"&key=AIzaSyCbUAATAabtDToQSbolZ2igFM6YgbL2HC0"
+            </script> -->
+            <script>
+                document.getElementById('map-visble')
+                    .addEventListener('click', function() {
+                        var site = "https://www.google.com/maps/embed/v1/directions?origin=place_id:"+origin_placeId+"&destination=place_id:"+destination_placeId+"&key=AIzaSyDHBozDzZZFB1eDG8kjSiMHwDrwHDiuEx8";
+                        document.getElementById('mapview').src = site;
+                        rvOffices();
+                    });
+            </script>
+            <script>
+                function rvOffices() {
+                    $.ajax({
+                        url: 'https://maps.googleapis.com/maps/api/directions/json?origin=place_id:'+origin_placeId+'&destination=place_id:'+destination_placeId+'&key=AIzaSyDHBozDzZZFB1eDG8kjSiMHwDrwHDiuEx8',
+                        type: 'GET',
+                        dataType: 'text',
+                        success: function(data) {
+                        var json_result = JSON.parse(data);
+                        //console.log(json_result); // The whole JSON
+                        console.log(json_result);
+                        console.log(json_result.routes[0].legs[0].distance.text);
+                        console.log(json_result.routes[0].legs[0].duration.text);
+                        document.getElementById('input-origin').value = json_result.routes[0].legs[0].distance.text, json_result.routes[0].legs[0].duration.text;
+                        }
+                    });
+                }
+            </script>
         </div>
     </body>
 </html>
+
+
