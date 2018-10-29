@@ -17,12 +17,17 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.http import HttpResponseRedirect,HttpResponse
 
 class CreateUserView(generics.CreateAPIView):
-    model = get_user_model()
+    """
+    Views that will allow for user registeration  
+    """
     permission = (AllowAny)
     serializer_class = UserRegistrationPostSerializer
 
 
 class LoginView(APIView):
+    """
+    Authenticating the registered user
+    """
     def post(self,request):
         serializer = LoginSerializer(data = request.data)
                   
@@ -31,20 +36,20 @@ class LoginView(APIView):
         try:
             for i in range(querySet_length):
             
-                if(len(request.data['email'])>0 and len(request.data['pswd'])>0):
+                if(len(request.data['email'])>0 and len(request.data['pswd'])>0):  #checking if data is passed in JSON form 
             
 
-                    if(request.data['email'] == user[i].email and request.data['pswd'] == user[i].pswd):
+                    if(request.data['email'] == user[i].email and request.data['pswd'] == user[i].pswd):    #verifying the registered details with the passed JSON data
                         print("Authenticated")
                         userLoggedIn = user[i].email
                         
-                        return HttpResponseRedirect("/cab/user/set/locations/")
+                        return HttpResponseRedirect("/cab/user/set/locations/")   #redirecting to mapview.html page
                         break
                 
                     
                 else:
-                    msg = "Must provide credentials"
-                    raise exceptions.ValidationError(msg)
+                    msg = "Must provide credentials"      
+                    raise exceptions.ValidationError(msg)   
                     
                     break
 
@@ -53,14 +58,14 @@ class LoginView(APIView):
         
         except MultiValueDictKeyError as e:
             return Response(e.args[0]) 
-        # serializer.is_valid(raise_exception = True)
-        # user = serializer.validated_data['user']
-        # django_login(request, user)
-        # token, created = Token.objects.get_or_create(user = user)
+        
         return Response(request.data, status = 200)
 
     
 class CabAvailablelistView(generics.ListAPIView):
+    """
+    Available Cabs will be displayed based on status field (false = Available and true = taken)
+    """
     serializer_class = CabListSerializer
     permission_class = [permissions.IsAuthenticated]
     # queryset = Cab.objects.all()
@@ -71,17 +76,21 @@ class CabAvailablelistView(generics.ListAPIView):
         #return Response(cab_available,status = 200)
 
 def mapview(request):
-    # return HttpResponse("<h1>This is after login page</h1>")
+    """
+    rendering mapview.html template 
+    """
     return render(request,'mapview.html')
 
 def setDistanceDuration(request):
-    
+    """
+    function for fetching source and destination of Ride and fetching duration and distance of resultant route.
+    """
     if request.method == 'POST' and 'mapInfo' in request.POST:
         mapInfoForm = mapInfo_Form(request.POST) 
         
         global mapInfo
         if mapInfoForm.is_valid():
-            mapInfo = mapInfoForm.cleaned_data['mapInfo'].split(",")
+            mapInfo = mapInfoForm.cleaned_data['mapInfo'].split("/")
             
             #u_Id = User.objects.filter(email=userLoggedIn)[0].user_Id
             # u_Id_CabRide = CabRide_User.objects.get(user_Id=u_Id)
@@ -90,10 +99,6 @@ def setDistanceDuration(request):
             # u_Id_CabRide.save()
             print("The Source of Ride",mapInfo[0])
             print("The destination of Ride",mapInfo[1])
-
-
-
-
         else:
             
 		#Handling the get request  
@@ -101,9 +106,8 @@ def setDistanceDuration(request):
     return HttpResponseRedirect("/cab/bookings/available")
 
 class LogoutView(APIView):
-    authentication_classes = (TokenAuthentication)
-
-    def post(self,request):
-        django_logout(request)
-        return Response(status = 204)
+    """
+    for Logout 
+    """
+    pass
 

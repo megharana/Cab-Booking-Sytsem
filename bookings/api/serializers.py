@@ -9,7 +9,7 @@ class UserRegistrationPostSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     
-class LoginSerializer(serializers.Serializer):
+class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email','pswd']
@@ -25,23 +25,4 @@ class CabListSerializer(serializers.ModelSerializer):
 
    
 
-    # def validate(self, data):
-    #     email = data.get("email", "")
-    #     pswd = data.get("pswd","")
-
-    #     if email and pswd :
-    #         user = authenticate(email = email, pswd = pswd)
-    #         print(user)
-    #         if user:
-    #             if user.is_active:
-    #                 data['user'] = user
-    #             else:
-    #                 msg = "User is inactive"
-    #                 raise exceptions.ValidationError(msg)
-    #         else:
-    #             msg = "Unable to login with above credentials"
-    #             raise exceptions.ValidationError(msg)
-    #     else:
-    #         msg = "Please provide credentials"
-    #         raise exceptions.ValidationError(msg)
-    #     return user
+    

@@ -17,7 +17,7 @@ Instructions:
 * http://127.0.0.1:8000/cab/user/set/location —- after logging in you will be redirected to this page
     Here Enter the source and destination of your Ride in the given placeholders.
 * To view the path of Ride Click on “See in Map” Button
-* To check the availability of Cab Click on “Back to DRF” button — this will redirect to http://127.0.0.1:8000/cab/bookings/available(Blank list appears, since no Cab details are available in database)
+* To check the availability of Cab Click on “Back to DRF” button — this will redirect to http://127.0.0.1:8000/cab/bookings/available (Blank list appears, since no Cab details are available in database)
 
 
 **NOTE** : Database schema is well explained in **Schema.png**
