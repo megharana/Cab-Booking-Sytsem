@@ -191,7 +191,7 @@
                     .addEventListener('click', function() {
                         var site = "https://www.google.com/maps/embed/v1/directions?origin=place_id:"+origin_placeId+"&destination=place_id:"+destination_placeId+"&key=AIzaSyDHBozDzZZFB1eDG8kjSiMHwDrwHDiuEx8";
                         document.getElementById('mapview').src = site;
-                        document.getElementById('input-origin').value = origin_placeId+destination_placeId;
+                        document.getElementById('input-origin').value = origin_placeId+"/"+destination_placeId;
                         //rvOffices();
                     });
             </script>

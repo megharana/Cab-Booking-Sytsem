@@ -37,8 +37,7 @@ class LoginView(APIView):
                     if(request.data['email'] == user[i].email and request.data['pswd'] == user[i].pswd):
                         print("Authenticated")
                         userLoggedIn = user[i].email
-                        getUserLogedIn(userLoggedIn)
-                        print(userLoggedIn)
+                        
                         return HttpResponseRedirect("/cab/user/set/locations/")
                         break
                 
@@ -83,13 +82,14 @@ def setDistanceDuration(request):
         global mapInfo
         if mapInfoForm.is_valid():
             mapInfo = mapInfoForm.cleaned_data['mapInfo'].split(",")
-            print(getUserLogedIn())
-            u_Id = User.objects.filter(email=getUserLogedIn())[0].user_Id
-            u_Id_CabRide = CabRide_User.objects.get(user_Id=u_Id)
-            u_Id_CabRide.userRide_Source = mapInfo[0]
-            u_Id_CabRide.userRide_Dest = mapInfo[1]
-            u_Id_CabRide.save()
-
+            
+            #u_Id = User.objects.filter(email=userLoggedIn)[0].user_Id
+            # u_Id_CabRide = CabRide_User.objects.get(user_Id=u_Id)
+            # u_Id_CabRide.userRide_Source = mapInfo[0]
+            # u_Id_CabRide.userRide_Dest = mapInfo[1]
+            # u_Id_CabRide.save()
+            print("The Source of Ride",mapInfo[0])
+            print("The destination of Ride",mapInfo[1])
 
 
 
