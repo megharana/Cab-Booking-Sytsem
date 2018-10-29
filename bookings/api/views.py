@@ -1,6 +1,7 @@
-from bookings.models import User,Cab
+from bookings.models import User,Cab,CabRide_User
 from django.shortcuts import render
 from rest_framework import generics,exceptions
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics,permissions
 from rest_framework.permissions import AllowAny
@@ -29,15 +30,15 @@ class LoginView(APIView):
         querySet_length = len(user)
         try:
             for i in range(querySet_length):
-                print(i)
-                print(user[i].email)
             
                 if(len(request.data['email'])>0 and len(request.data['pswd'])>0):
             
-                    print(user[i].email)
+
                     if(request.data['email'] == user[i].email and request.data['pswd'] == user[i].pswd):
-                        print(user[i].email)
                         print("Authenticated")
+                        userLoggedIn = user[i].email
+                        getUserLogedIn(userLoggedIn)
+                        print(userLoggedIn)
                         return HttpResponseRedirect("/cab/user/set/locations/")
                         break
                 
@@ -75,15 +76,29 @@ def mapview(request):
     return render(request,'mapview.html')
 
 def setDistanceDuration(request):
+    
     if request.method == 'POST' and 'mapInfo' in request.POST:
         mapInfoForm = mapInfo_Form(request.POST) 
+        
+        global mapInfo
         if mapInfoForm.is_valid():
-            mapInfo = mapInfoForm.cleaned_data['mapInfo']
-            print(mapInfo)
+            mapInfo = mapInfoForm.cleaned_data['mapInfo'].split(",")
+            print(getUserLogedIn())
+            u_Id = User.objects.filter(email=getUserLogedIn())[0].user_Id
+            u_Id_CabRide = CabRide_User.objects.get(user_Id=u_Id)
+            u_Id_CabRide.userRide_Source = mapInfo[0]
+            u_Id_CabRide.userRide_Dest = mapInfo[1]
+            u_Id_CabRide.save()
+
+
+
+
+
         else:
-		
+            
 		#Handling the get request  
             mapInfoForm = mapInfo_Form()
+    return HttpResponseRedirect("/cab/bookings/available")
 
 class LogoutView(APIView):
     authentication_classes = (TokenAuthentication)

@@ -26,13 +26,20 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
         <div>
             <div id="pac-container">
-            <form method="post">{% csrf_token %}
+                {% comment %} <input id="input-origin" type="text" name="mapInfo"
+                    placeholder="Enter the sorce">
+                <input id="input-destination" type="text"
+                    placeholder="Enter the destination">
+                <button id="map-visble" ></button> {% endcomment %}
+            <form method="post" action ="http://127.0.0.1:8000/cab/user/info">{% csrf_token %}
                 <input id="input-origin" type="text" name="mapInfo"
                     placeholder="Enter the sorce">
                 <input id="input-destination" type="text"
                     placeholder="Enter the destination">
-                <button id="map-visble" type="submit" formmethod="POST"></button>
-            </form>
+                
+                <button id="senInfo" type="submit" formmethod="POST">Back to Drf</button>
+            </form> 
+            <button id="map-visble" >See in Map</button>
             </div>
         </div>
         <div id="iframeHolder"></div>
@@ -184,10 +191,11 @@
                     .addEventListener('click', function() {
                         var site = "https://www.google.com/maps/embed/v1/directions?origin=place_id:"+origin_placeId+"&destination=place_id:"+destination_placeId+"&key=AIzaSyDHBozDzZZFB1eDG8kjSiMHwDrwHDiuEx8";
                         document.getElementById('mapview').src = site;
-                        rvOffices();
+                        document.getElementById('input-origin').value = origin_placeId+destination_placeId;
+                        //rvOffices();
                     });
             </script>
-            <script>
+            {% comment %} <script>
                 function rvOffices() {
                     $.ajax({
                         url: 'https://maps.googleapis.com/maps/api/directions/json?origin=place_id:'+origin_placeId+'&destination=place_id:'+destination_placeId+'&key=AIzaSyDHBozDzZZFB1eDG8kjSiMHwDrwHDiuEx8',
@@ -199,11 +207,11 @@
                         console.log(json_result);
                         console.log(json_result.routes[0].legs[0].distance.text);
                         console.log(json_result.routes[0].legs[0].duration.text);
-                        document.getElementById('input-origin').value = json_result.routes[0].legs[0].distance.text, json_result.routes[0].legs[0].duration.text;
+                        
                         }
                     });
                 }
-            </script>
+            </script> {% endcomment %}
         </div>
     </body>
 </html>
