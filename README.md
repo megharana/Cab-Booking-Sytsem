@@ -12,7 +12,7 @@ Instructions:
 * http://127.0.0.1:8000/cab/user/login —-  for logging in the application(login using email and password)
 
     input must be in JSON form 
-    e.g.: {“email”:<your registered email ID>,”pswd”:”<Your pswd>”}
+    e.g.: {“email”:(your registered email ID),”pswd”:”(Your pswd)”}
 
 * http://127.0.0.1:8000/cab/user/set/location —- after logging in you will be redirected to this page
     Here Enter the source and destination of your Ride in the given placeholders.
